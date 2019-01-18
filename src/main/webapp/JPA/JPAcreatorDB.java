@@ -38,11 +38,13 @@ public class JPAcreatorDB {
         glock.setCalibre(caliber12);
         glock.setProducer(mihuCompany);
         glock.setName("Glock511-P");
+        glock.setPrice(1199.99);
 
         FireArms uzi = new FireArms();
         uzi.setName("UZI-152");
         uzi.setProducer(winchester);
         uzi.setCalibre(caliber44);
+        uzi.setPrice(3999.99);
 
         menager.getTransaction().begin();
 

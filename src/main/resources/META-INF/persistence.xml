@@ -1,19 +1,15 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              version="1.0">
-
-
 <persistence-unit name="REST" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <class>model.Ammo</class>
     <class>model.FireArms</class>
     <class>model.Calibre</class>
     <class>model.Producer</class>
-
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.hbm2dll.auto" value="create-drop"/>
-
 
             <property name="hibernate.show_sql" value="true"/>
 
@@ -30,30 +26,9 @@
             <property name="javax.persistence.jdbc.user" value="Krzysztof"/>
             <property name="javax.persistence.jdbc.password" value="webhardcore"/>
 
-
             <!--<property name="javax.persistence.sql-load-script-source" value="insert.sql"/>-->
         </properties>
     </persistence-unit>
 
 </persistence>
 
-<!--<persistence>-->
-    <!--<persistence-unit name="REST" transaction-type="RESOURCE_LOCAL">-->
-
-        <!--<properties>-->
-            <!--<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>-->
-            <!--<property name="javax.persistence.jdbc.user" value="Krzysztof"/>-->
-            <!--<property name="javax.persistence.jdbc.password" value="webhardcore"/>-->
-            <!--<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/REST"/>-->
-            <!--<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect"/>-->
-            <!--<property name="hibernate.max_fetch_depth" value="3"/>-->
-
-            <!--&lt;!&ndash; cache configuration &ndash;&gt;-->
-            <!--<property name="hibernate.ejb.classcache.org.hibernate.ejb.test.Item" value="read-write"/>-->
-            <!--<property name="hibernate.ejb.collectioncache.org.hibernate.ejb.test.Item.distributors" value="read-write, RegionName"/>-->
-
-            <!--&lt;!&ndash; alternatively to <class> and <property> declarations, you can use a regular hibernate.cfg.xml file &ndash;&gt;-->
-            <!--&lt;!&ndash; property name="hibernate.ejb.cfgfile" value="/org/hibernate/ejb/test/hibernate.cfg.xml"/ &ndash;&gt;-->
-        <!--</properties>-->
-    <!--</persistence-unit>-->
-<!--</persistence>-->
