@@ -8,7 +8,7 @@ public class Ammo {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @ManyToOne
     private Calibre calibre;
@@ -17,7 +17,7 @@ public class Ammo {
     public Ammo() {
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -29,7 +29,7 @@ public class Ammo {
         return price;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

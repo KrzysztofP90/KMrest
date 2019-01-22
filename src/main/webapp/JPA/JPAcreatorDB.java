@@ -66,14 +66,14 @@ public class JPAcreatorDB {
     }
 
     public static void main(String[] a ) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
-        EntityManager menager = factory.createEntityManager();
-
-        initDataBase(menager);
-
-
-        menager.close();
-        factory.close();
+//        EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
+//        EntityManager menager = factory.createEntityManager();
+//
+//        initDataBase(menager);
+//
+//
+//        menager.close();
+//        factory.close();
 
     }
 }

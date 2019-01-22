@@ -9,12 +9,12 @@
   <servlet>
     <servlet-name>StartServlet</servlet-name>
     <servlet-class>routes.StartServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <!--<load-on-startup>1</load-on-startup>-->
   </servlet>
 
   <servlet-mapping>
     <servlet-name>StartServlet</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/firearms/*</url-pattern>
   </servlet-mapping>
 
 
