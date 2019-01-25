@@ -11,8 +11,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.ResponseWrapper;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.*;
 
 
 public class StartServlet extends HttpServlet {
@@ -64,5 +67,34 @@ public class StartServlet extends HttpServlet {
         menager.close();
         Gson gson = new Gson();
         return gson.toJson(answer);
+    }
+
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+       String json = getJsonFromBody(request);
+       Gson gson = new Gson();
+
+        FireArms newArm = gson.fromJson(json, FireArms.class);
+
+       EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
+       EntityManager menager = factory.createEntityManager();
+        menager.getTransaction().begin();
+        menager.persist(newArm);
+        menager.getTransaction().commit();
+        menager.close();
+        factory.close();
+       response.getWriter().write("Object saved!");
+    }
+
+    private String getJsonFromBody(HttpServletRequest request) throws IOException{
+        BufferedReader bf =  request.getReader();
+        StringBuilder sb = new StringBuilder();
+        String line = bf.readLine();
+        while (line != null) {
+            sb.append(line);
+            line = bf.readLine();
+        }
+        return sb.toString();
     }
 }
