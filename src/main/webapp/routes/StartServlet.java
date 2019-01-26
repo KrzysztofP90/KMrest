@@ -54,22 +54,22 @@ public class StartServlet extends HttpServlet {
             FireArms newArm = gson.fromJson(json, FireArms.class);
             EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
             EntityManager menager = factory.createEntityManager();
-            boolean edited = true;
+            boolean added = true;
             menager.getTransaction().begin();
             try {
                 menager.persist(newArm);
             }catch (PersistenceException pe) {
                 pe.printStackTrace();
-                edited = false;
+                added = false;
                 response.getWriter().write("Check Your JSON correct! Don't pass id to JSON when use POST method!");
             }catch (JsonSyntaxException e) {
-                edited = false;
+                added = false;
                 response.getWriter().write("Check Your JSON correct!");
             }
             menager.getTransaction().commit();
             menager.close();
             factory.close();
-            if (edited) {
+            if (added) {
                 response.getWriter().write("Object saved!");
             }
     }
@@ -88,13 +88,30 @@ public class StartServlet extends HttpServlet {
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE FireArms a SET ");
         sb.append(helper.createCustomUpdateQuery(arrayOfProperties));
+        boolean editedOk = true;
 
         menager.getTransaction().begin();
-        Query query = menager.createQuery(sb.toString());
-        query.executeUpdate();
+        try {
+            Query query = menager.createQuery(sb.toString());
+            query.executeUpdate();
+        }catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            editedOk = false;
+            response.getWriter().write("Check Your JSON correct! Put to JSON id of object to editing!");
+        }
+        catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            editedOk =false;
+            response.getWriter().write("Check Your JSON correct!");
+        }
         menager.getTransaction().commit();
         menager.close();
         factory.close();
-        response.getWriter().write("Object edited!");
+        if (editedOk) {
+            System.out.println(response.getStatus());
+            response.getWriter().write("Object edited if You enter existing id!");
+        }
     }
+
+
 }
