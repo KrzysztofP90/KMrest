@@ -2,6 +2,7 @@ package routes;
 
 import com.google.gson.Gson;
 import model.FireArms;
+import routesHelpers.GetHelper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -24,7 +25,8 @@ public class StartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws
             ServletException, IOException {
 
-        String id = getMetaDateFromURL(request);
+        GetHelper helper = new GetHelper();
+        String id = helper.getIdFromURL(request);
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
         EntityManager menager = factory.createEntityManager();
         String json;
@@ -39,15 +41,7 @@ public class StartServlet extends HttpServlet {
     }
 
 
-    private String getMetaDateFromURL(HttpServletRequest request) {
-        String URL = request.getRequestURI();
-        String[] arr = URL.split("/");
-        if (arr.length < 3) {
-            return "all";
-        }
-        int indexOfArmsId = 2;
-        return arr[indexOfArmsId];
-    }
+
 
     private String getArmsJsonById(String id, EntityManager menager) {
         menager.getTransaction().begin();
