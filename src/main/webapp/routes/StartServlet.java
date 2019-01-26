@@ -1,9 +1,11 @@
 package routes;
 
+import appExceptions.BadURLforDeleteMethodException;
 import appExceptions.IdNotExistException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import model.FireArms;
+import routesHelpers.DeleteHelper;
 import routesHelpers.GetHelper;
 import routesHelpers.PutHelper;
 import routesHelpers.PostHelper;
@@ -114,4 +116,29 @@ public class StartServlet extends HttpServlet {
     }
 
 
+
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        DeleteHelper helper = new DeleteHelper();
+        boolean deletedUrlOk = true;
+        String id ="";
+        try {
+            id = helper.getIdFromURL(request);
+        }catch (BadURLforDeleteMethodException e) {
+            e.printStackTrace();
+            response.getWriter().write(e.getMessage());
+            deletedUrlOk = false;
+        }
+        if (deletedUrlOk) {
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
+            EntityManager menager = factory.createEntityManager();
+            menager.getTransaction().begin();
+            Query query = menager.createQuery("DELETE FROM FireArms WHERE id=" + id);
+            query.executeUpdate();
+            menager.getTransaction().commit();
+            menager.close();
+            factory.close();
+            response.getWriter().write("Object removed if You enter existing id!");
+        }
+    }
 }
