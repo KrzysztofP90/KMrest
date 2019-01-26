@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class PostAndPutHelper {
+public class PutHelper {
 
     public String getJsonFromBody(HttpServletRequest request) throws IOException {
         BufferedReader bf =  request.getReader();

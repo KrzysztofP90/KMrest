@@ -1,20 +1,19 @@
 package routes;
 
+import appExceptions.IdNotExistException;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import model.FireArms;
 import routesHelpers.GetHelper;
-import routesHelpers.PostAndPutHelper;
+import routesHelpers.PutHelper;
+import routesHelpers.PostHelper;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
 
 
 public class StartServlet extends HttpServlet {
@@ -27,12 +26,17 @@ public class StartServlet extends HttpServlet {
         String id = helper.getIdFromURL(request);
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
         EntityManager menager = factory.createEntityManager();
-        String json;
+        String json = "";
        if (id.equals("all")) {
-           json = getAllJsonArms(id, menager);
+           json = helper.getAllJsonArms(id, menager);
        }
        else {
-           json = getArmsJsonById(id,menager);
+           try {
+                json = helper.getArmsJsonById(id,menager);
+           }catch (IdNotExistException e) {
+               response.getWriter().write(e.getMessage());
+               e.printStackTrace();
+           }
        }
         factory.close();
         response.getWriter().write(json);
@@ -40,53 +44,40 @@ public class StartServlet extends HttpServlet {
 
 
 
-
-    private String getArmsJsonById(String id, EntityManager menager) {
-        menager.getTransaction().begin();
-        List<FireArms> answer = menager.createQuery("SELECT a FROM FireArms a WHERE a.id="+id,
-                FireArms.class).getResultList();
-
-        menager.getTransaction().commit();
-        menager.close();
-        Gson gson = new Gson();
-        return gson.toJson(answer.get(0));
-    }
-
-    private String getAllJsonArms(String id, EntityManager menager) {
-
-        menager.getTransaction().begin();
-        List<FireArms> answer = menager.createQuery("SELECT a FROM FireArms a",
-                FireArms.class).getResultList();
-
-        menager.getTransaction().commit();
-        menager.close();
-        Gson gson = new Gson();
-        return gson.toJson(answer);
-    }
-
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        PostAndPutHelper helper = new PostAndPutHelper();
-        String json = helper.getJsonFromBody(request);
-        Gson gson = new Gson();
+        PostHelper helper = new PostHelper();
 
-        FireArms newArm = gson.fromJson(json, FireArms.class);
+        String json = helper.getPostJsonFromBody(request);
 
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
-        EntityManager menager = factory.createEntityManager();
-        menager.getTransaction().begin();
-        menager.persist(newArm);
-        menager.getTransaction().commit();
-        menager.close();
-        factory.close();
-        response.getWriter().write("Object saved!");
+            Gson gson = new Gson();
+            FireArms newArm = gson.fromJson(json, FireArms.class);
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
+            EntityManager menager = factory.createEntityManager();
+            boolean edited = true;
+            menager.getTransaction().begin();
+            try {
+                menager.persist(newArm);
+            }catch (PersistenceException pe) {
+                pe.printStackTrace();
+                edited = false;
+                response.getWriter().write("Check Your JSON correct! Don't pass id to JSON when use POST method!");
+            }catch (JsonSyntaxException e) {
+                edited = false;
+                response.getWriter().write("Check Your JSON correct!");
+            }
+            menager.getTransaction().commit();
+            menager.close();
+            factory.close();
+            if (edited) {
+                response.getWriter().write("Object saved!");
+            }
     }
 
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        PostAndPutHelper helper = new PostAndPutHelper();
+        PutHelper helper = new PutHelper();
         String json = helper.getJsonFromBody(request);
 
         String[] arrayOfProperties = helper.parseJsonToPropertiesArray(json);
