@@ -1,6 +1,11 @@
 package routesHelpers;
 
+import com.google.gson.JsonSyntaxException;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -54,5 +59,28 @@ public class PutHelper {
             arrayOfProperties[i] = arrayOfProperties[i].split("=")[0] + "='" + arrayOfProperties[i].split("=")[1] + "'";
         }
         return arrayOfProperties;
+    }
+
+    public boolean updateObjectInDataBase(EntityManager menager, StringBuilder sb, HttpServletResponse response)
+    throws IOException {
+        boolean editedOk = true;
+
+        menager.getTransaction().begin();
+        try {
+            Query query = menager.createQuery(sb.toString());
+            query.executeUpdate();
+        }catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            editedOk = false;
+            response.getWriter().write("Check Your JSON correct! Put to JSON id of object to editing!");
+        }
+        catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            editedOk =false;
+            response.getWriter().write("Check Your JSON correct!");
+        }
+        menager.getTransaction().commit();
+        menager.close();
+        return editedOk;
     }
 }

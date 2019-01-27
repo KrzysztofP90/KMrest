@@ -29,19 +29,18 @@ public class StartServlet extends HttpServlet {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
         EntityManager menager = factory.createEntityManager();
         String json = "";
-       if (id.equals("all")) {
-           json = helper.getAllJsonArms(id, menager);
-       }
-       else {
-           try {
-                json = helper.getArmsJsonById(id,menager);
-           }catch (IdNotExistException e) {
-               response.getWriter().write(e.getMessage());
-               e.printStackTrace();
-           }
-       }
+        boolean urlOk = true;
+        try {
+            json = helper.getJSONFromDataBase(id, menager, response);
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+            urlOk = false;
+            response.getWriter().write("Check Your Url!");
+        }
         factory.close();
-        response.getWriter().write(json);
+        if (urlOk) {
+            response.getWriter().write(json);
+        }
     }
 
 
@@ -53,23 +52,11 @@ public class StartServlet extends HttpServlet {
         String json = helper.getPostJsonFromBody(request);
 
             Gson gson = new Gson();
-            FireArms newArm = gson.fromJson(json, FireArms.class);
+            FireArms newObject = gson.fromJson(json, FireArms.class);
             EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
             EntityManager menager = factory.createEntityManager();
-            boolean added = true;
-            menager.getTransaction().begin();
-            try {
-                menager.persist(newArm);
-            }catch (PersistenceException pe) {
-                pe.printStackTrace();
-                added = false;
-                response.getWriter().write("Check Your JSON correct! Don't pass id to JSON when use POST method!");
-            }catch (JsonSyntaxException e) {
-                added = false;
-                response.getWriter().write("Check Your JSON correct!");
-            }
-            menager.getTransaction().commit();
-            menager.close();
+
+            boolean added = helper.addObjectToDataBase(menager,newObject,response);
             factory.close();
             if (added) {
                 response.getWriter().write("Object saved!");
@@ -90,24 +77,7 @@ public class StartServlet extends HttpServlet {
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE FireArms a SET ");
         sb.append(helper.createCustomUpdateQuery(arrayOfProperties));
-        boolean editedOk = true;
-
-        menager.getTransaction().begin();
-        try {
-            Query query = menager.createQuery(sb.toString());
-            query.executeUpdate();
-        }catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            editedOk = false;
-            response.getWriter().write("Check Your JSON correct! Put to JSON id of object to editing!");
-        }
-        catch (JsonSyntaxException e) {
-            e.printStackTrace();
-            editedOk =false;
-            response.getWriter().write("Check Your JSON correct!");
-        }
-        menager.getTransaction().commit();
-        menager.close();
+        boolean editedOk = helper.updateObjectInDataBase(menager,sb,response);
         factory.close();
         if (editedOk) {
             System.out.println(response.getStatus());

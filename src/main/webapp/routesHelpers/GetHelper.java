@@ -3,9 +3,13 @@ package routesHelpers;
 import appExceptions.IdNotExistException;
 import com.google.gson.Gson;
 import model.FireArms;
+import sun.security.pkcs.ParsingException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 public class GetHelper {
@@ -21,6 +25,21 @@ public class GetHelper {
         return arr[indexOfRecordId];
     }
 
+    public String getJSONFromDataBase(String id, EntityManager menager, HttpServletResponse response) throws IOException, PersistenceException {
+        String json = "";
+        if (id.equals("all")) {
+            json = getAllJsonArms(id, menager);
+        }
+        else {
+            try {
+                json = getArmsJsonById(id,menager);
+            }catch (IdNotExistException e) {
+                response.getWriter().write(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return json;
+    }
 
     public String getArmsJsonById(String id, EntityManager menager) throws IdNotExistException {
         menager.getTransaction().begin();
