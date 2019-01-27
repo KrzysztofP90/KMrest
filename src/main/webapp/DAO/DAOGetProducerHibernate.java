@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class DAOGetProducentHibernate implements DAOGet {
+public class DAOGetProducerHibernate implements DAOGet {
 
 
     public String getJSOnFromDataBase(String id, HttpServletResponse response)

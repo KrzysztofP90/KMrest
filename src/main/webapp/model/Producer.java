@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 @Entity
 
-public class Producer {
+public class Producer implements Model {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

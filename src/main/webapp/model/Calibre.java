@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 
-public class Calibre {
+public class Calibre implements Model{
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

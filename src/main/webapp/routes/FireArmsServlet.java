@@ -1,9 +1,8 @@
 package routes;
 
+import DAO.*;
 import appExceptions.BadURLforDeleteMethodException;
-import appExceptions.IdNotExistException;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import model.FireArms;
 import routesHelpers.DeleteHelper;
 import routesHelpers.GetHelper;
@@ -18,49 +17,46 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-public class StartServlet extends HttpServlet {
+public class FireArmsServlet extends HttpServlet {
+
+    private DAOput daoPut = new DAOPutHibernate();
+    private DAOPost daoPost = new DAOPostHibernate();
+    private DAOGet daoGetFireArms = new DAOGetFireArmsHibernate();
+    private DAOdelete daoDelete = new DAOdeleteHibernate();
 
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws
-            ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         GetHelper helper = new GetHelper();
         String id = helper.getIdFromURL(request);
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
-        EntityManager menager = factory.createEntityManager();
         String json = "";
         boolean urlOk = true;
         try {
-            json = helper.getJSONFromDataBase(id, menager, response);
+            json = daoGetFireArms.getJSOnFromDataBase(id,response);
         } catch (PersistenceException e) {
             e.printStackTrace();
             urlOk = false;
             response.getWriter().write("Check Your Url!");
         }
-        factory.close();
         if (urlOk) {
             response.getWriter().write(json);
         }
     }
 
 
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         PostHelper helper = new PostHelper();
-
         String json = helper.getPostJsonFromBody(request);
+        Gson gson = new Gson();
+        FireArms newObject = gson.fromJson(json, FireArms.class);
 
-            Gson gson = new Gson();
-            FireArms newObject = gson.fromJson(json, FireArms.class);
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
-            EntityManager menager = factory.createEntityManager();
-
-            boolean added = helper.addObjectToDataBase(menager,newObject,response);
-            factory.close();
-            if (added) {
-                response.getWriter().write("Object saved!");
-            }
+        boolean added = daoPost.addObjectToDataBase(newObject,response);
+        if (added) {
+            response.getWriter().write("Object saved!");
+        }
     }
 
 
@@ -68,23 +64,13 @@ public class StartServlet extends HttpServlet {
 
         PutHelper helper = new PutHelper();
         String json = helper.getJsonFromBody(request);
-
         String[] arrayOfProperties = helper.parseJsonToPropertiesArray(json);
 
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
-        EntityManager menager = factory.createEntityManager();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("UPDATE FireArms a SET ");
-        sb.append(helper.createCustomUpdateQuery(arrayOfProperties));
-        boolean editedOk = helper.updateObjectInDataBase(menager,sb,response);
-        factory.close();
+        boolean editedOk = daoPut.updateObjectInDataBase("Ammo",arrayOfProperties,response);
         if (editedOk) {
-            System.out.println(response.getStatus());
             response.getWriter().write("Object edited if You enter existing id!");
         }
     }
-
 
 
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -100,14 +86,7 @@ public class StartServlet extends HttpServlet {
             deletedUrlOk = false;
         }
         if (deletedUrlOk) {
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
-            EntityManager menager = factory.createEntityManager();
-            menager.getTransaction().begin();
-            Query query = menager.createQuery("DELETE FROM FireArms WHERE id=" + id);
-            query.executeUpdate();
-            menager.getTransaction().commit();
-            menager.close();
-            factory.close();
+            daoDelete.deleteRecordFromDataBaseById("FireArms",id);
             response.getWriter().write("Object removed if You enter existing id!");
         }
     }

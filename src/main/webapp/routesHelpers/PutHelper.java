@@ -1,11 +1,6 @@
 package routesHelpers;
 
-import com.google.gson.JsonSyntaxException;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -19,20 +14,6 @@ public class PutHelper {
             sb.append(line);
             line = bf.readLine();
         }
-        return sb.toString();
-    }
-
-
-    public String createCustomUpdateQuery(String[] arrayOfProperties) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i < arrayOfProperties.length; i++) {
-            sb.append("a.");
-            sb.append(arrayOfProperties[i]);
-            sb.append(",");
-        }
-        sb.deleteCharAt(sb.toString().length()-1);
-        sb.append(" WHERE a.id=");
-        sb.append(arrayOfProperties[0]);
         return sb.toString();
     }
 
@@ -53,34 +34,12 @@ public class PutHelper {
     }
 
 
-
     private String[] addSingleQuotesToPropertyValue(String[] arrayOfProperties) {
         for (int i= 1; i <arrayOfProperties.length; i++) {
-            arrayOfProperties[i] = arrayOfProperties[i].split("=")[0] + "='" + arrayOfProperties[i].split("=")[1] + "'";
+            arrayOfProperties[i] = arrayOfProperties[i].
+                    split("=")[0] + "='" + arrayOfProperties[i].split("=")[1] + "'";
         }
         return arrayOfProperties;
     }
 
-    public boolean updateObjectInDataBase(EntityManager menager, StringBuilder sb, HttpServletResponse response)
-    throws IOException {
-        boolean editedOk = true;
-
-        menager.getTransaction().begin();
-        try {
-            Query query = menager.createQuery(sb.toString());
-            query.executeUpdate();
-        }catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            editedOk = false;
-            response.getWriter().write("Check Your JSON correct! Put to JSON id of object to editing!");
-        }
-        catch (JsonSyntaxException e) {
-            e.printStackTrace();
-            editedOk =false;
-            response.getWriter().write("Check Your JSON correct!");
-        }
-        menager.getTransaction().commit();
-        menager.close();
-        return editedOk;
-    }
 }

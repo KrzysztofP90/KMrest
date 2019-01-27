@@ -7,18 +7,45 @@
 
 
   <servlet>
-    <servlet-name>StartServlet</servlet-name>
-    <servlet-class>routes.StartServlet</servlet-class>
+    <servlet-name>FireArmsServlet</servlet-name>
+    <servlet-class>routes.FireArmsServlet</servlet-class>
     <!--<load-on-startup>1</load-on-startup>-->
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>StartServlet</servlet-name>
+    <servlet-name>FireArmsServlet</servlet-name>
     <url-pattern>/firearms/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>AmmoServlet</servlet-name>
+    <servlet-class>routes.AmmoServlet</servlet-class>
+  </servlet>
 
+  <servlet-mapping>
+    <servlet-name>AmmoServlet</servlet-name>
+    <url-pattern>/ammo/*</url-pattern>
+  </servlet-mapping>
 
+  <servlet>
+    <servlet-name>CalibreServlet</servlet-name>
+    <servlet-class>routes.CalibreServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>CalibreServlet</servlet-name>
+    <url-pattern>/calibre/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ProducerServlet</servlet-name>
+    <servlet-class>routes.ProducerServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ProducerServlet</servlet-name>
+    <url-pattern>/producer/*</url-pattern>
+  </servlet-mapping>
 
 
 </web-app>

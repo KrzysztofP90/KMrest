@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 
-public class FireArms implements Modelable {
+public class FireArms implements Model {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

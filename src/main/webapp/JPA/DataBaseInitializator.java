@@ -10,7 +10,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-public class JPAcreatorDB {
+public class DataBaseInitializator {
 
     public static void initDataBase(EntityManager menager) {
 

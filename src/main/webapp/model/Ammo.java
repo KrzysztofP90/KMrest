@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 
-public class Ammo {
+public class Ammo implements Model {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

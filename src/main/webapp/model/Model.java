@@ -1,4 +1,4 @@
 package model;
 
-public interface Modelable {
+public interface Model {
 }

@@ -9,20 +9,9 @@ import javax.persistence.Query;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class DAOammoHibernate implements DAOammo {
+public class DAOPutHibernate implements DAOput {
 
 
-    public void deleteRecordFromDataBaseById(String tableName, String id) {
-
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("REST");
-        EntityManager menager = factory.createEntityManager();
-        menager.getTransaction().begin();
-        Query query = menager.createQuery("DELETE FROM " + tableName +"WHERE id=" + id);
-        query.executeUpdate();
-        menager.getTransaction().commit();
-        menager.close();
-        factory.close();
-    }
 
     public boolean updateObjectInDataBase(String tableName, String[] arrayOfProperties, HttpServletResponse response)
             throws IOException {
@@ -34,20 +23,23 @@ public class DAOammoHibernate implements DAOammo {
         sb.append("UPDATE ");
         sb.append(tableName);
         sb.append(" a SET ");
-        sb.append(createCustomUpdateQuery(arrayOfProperties));
         menager.getTransaction().begin();
         try {
+            sb.append(createCustomUpdateQuery(arrayOfProperties));
             Query query = menager.createQuery(sb.toString());
             query.executeUpdate();
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             editedOk = false;
             response.getWriter().write("Check Your JSON correct! Put to JSON id of object to editing!");
-        }
-        catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException e) {
             e.printStackTrace();
             editedOk =false;
             response.getWriter().write("Check Your JSON correct!");
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            editedOk = false;
+            response.getWriter().write("Pass id to JSON when You edit object by put method!");
         }
         menager.getTransaction().commit();
         menager.close();
