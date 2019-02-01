@@ -34,7 +34,7 @@ public class DAOPutHibernate implements DAOput {
             response.getWriter().write("Check Your JSON correct! Put to JSON id of object to editing!");
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
-            editedOk =false;
+            editedOk = false;
             response.getWriter().write("Check Your JSON correct!");
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();

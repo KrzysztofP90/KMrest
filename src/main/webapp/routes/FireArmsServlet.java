@@ -66,7 +66,7 @@ public class FireArmsServlet extends HttpServlet {
         String json = helper.getJsonFromBody(request);
         String[] arrayOfProperties = helper.parseJsonToPropertiesArray(json);
 
-        boolean editedOk = daoPut.updateObjectInDataBase("Ammo",arrayOfProperties,response);
+        boolean editedOk = daoPut.updateObjectInDataBase("FireArms",arrayOfProperties,response);
         if (editedOk) {
             response.getWriter().write("Object edited if You enter existing id!");
         }
